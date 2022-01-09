@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/yzchan/meituan-union-go/request"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -32,27 +32,25 @@ func NewClient(key string, secret string) *Client {
 	}
 }
 
-func (c *Client) sign(params map[string]string) string {
-	delete(params, "sign")
+func (c *Client) sign(params url.Values) string {
+	params.Del("sign")
 
-	keys := make([]string, 0)
-	for k := range params {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
+	qs := params.Encode()
+	qs = strings.ReplaceAll(qs, "&", "")
+	qs = strings.ReplaceAll(qs, "=", "")
 
-	str := c.Secret
-	for _, key := range keys {
-		str += key + params[key]
-	}
-	str += c.Secret
+	str := c.Secret + qs + c.Secret
 
 	h := md5.New()
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (c *Client) request(uri string, params map[string]string) (content []byte, err error) {
+func (c *Client) Do(request *request.OrderListRequest) (content []byte, err error) {
+	return c.request(request.GetApiPath(), request.Params())
+}
+
+func (c *Client) request(path string, params url.Values) (content []byte, err error) {
 	var (
 		body  []byte
 		resp  *http.Response
@@ -60,13 +58,10 @@ func (c *Client) request(uri string, params map[string]string) (content []byte, 
 		proxy func(*http.Request) (*url.URL, error)
 	)
 
-	params["appkey"] = c.Key
-	params["sign"] = c.sign(params)
-	qs := make([]string, 0)
-	for k, v := range params {
-		qs = append(qs, k+"="+v)
-	}
-	uri = uri + "?" + strings.Join(qs, "&")
+	params.Add("appkey", c.Key)
+	params.Add("ts", strconv.Itoa(int(time.Now().Unix())))
+	params.Add("sign", c.sign(params))
+	uri := GateWay + path + "?" + params.Encode()
 
 	if c.Debug {
 		log.Println("==========Meituan Debug Start [Request↓]==========")
@@ -107,9 +102,9 @@ type Resp struct {
 	Data   string `json:"data"`
 }
 
-func (c *Client) GenerateUrl(params map[string]string) (ret *Resp, err error) {
+func (c *Client) GenerateUrl(params url.Values) (ret *Resp, err error) {
 	var content []byte
-	if content, err = c.request(GateWay+"/api/generateLink", params); err != nil {
+	if content, err = c.request("/api/generateLink", params); err != nil {
 		return
 	}
 	ret = &Resp{}
@@ -119,9 +114,9 @@ func (c *Client) GenerateUrl(params map[string]string) (ret *Resp, err error) {
 	return
 }
 
-func (c *Client) MiniCode(params map[string]string) (ret *Resp, err error) {
+func (c *Client) MiniCode(params url.Values) (ret *Resp, err error) {
 	var content []byte
-	if content, err = c.request(GateWay+"/api/miniCode", params); err != nil {
+	if content, err = c.request("/api/miniCode", params); err != nil {
 		return
 	}
 	ret = &Resp{}
@@ -147,9 +142,9 @@ type Order struct {
 	Smstitle         string      `json:"smstitle"`
 	Status           int         `json:"status"`
 	TradeTypeList    []int       `json:"tradeTypeList"`
-	RiskOrder        int `json:"riskOrder"`
-	Refundprofit     string `json:"refundprofit"`
-	CpaRefundProfit  string `json:"cpaRefundProfit"`
+	RiskOrder        int         `json:"riskOrder"`
+	Refundprofit     string      `json:"refundprofit"`
+	CpaRefundProfit  string      `json:"cpaRefundProfit"`
 	RefundInfoList   interface{} `json:"refundInfoList"`
 	RefundProfitList interface{} `json:"refundProfitList"`
 	Extra            interface{} `json:"extra"`
@@ -160,10 +155,9 @@ type OrderListResp struct {
 	DataList []Order `json:"dataList"`
 }
 
-func (c *Client) OrderList(params map[string]string) (ret *OrderListResp, err error) {
+func (c *Client) OrderList(params url.Values) (ret *OrderListResp, err error) {
 	var content []byte
-	params["ts"] = strconv.Itoa(int(time.Now().Unix()))
-	if content, err = c.request(GateWay+"/api/orderList", params); err != nil {
+	if content, err = c.request("/api/orderList", params); err != nil {
 		return
 	}
 	ret = &OrderListResp{}
@@ -179,9 +173,9 @@ type OrderResp struct {
 	Order  Order  `json:"data"`
 }
 
-func (c *Client) Order(params map[string]string) (ret *OrderResp, err error) {
+func (c *Client) Order(params url.Values) (ret *OrderResp, err error) {
 	var content []byte
-	if content, err = c.request(GateWay+"/api/order", params); err != nil {
+	if content, err = c.request("/api/order", params); err != nil {
 		return
 	}
 	fmt.Println(string(content))
@@ -193,15 +187,28 @@ func (c *Client) Order(params map[string]string) (ret *OrderResp, err error) {
 }
 
 func main() {
-	client := NewClient("xxx", "xxx")
-	client.Debug = false
-	//params := map[string]string{
-	//	"actId":     "33",
-	//	"sid":       "test",
-	//	"linkType":  "1",
-	//	"shortLink": "1",
+	//	req := request.NewOrderListRequest()
+	//	req.SetActId(33)
+	//	req.SetBusinessLine(2)
+	//	req.SetStartTime(1634659200)
+	//	req.SetEndTime(1634745600)
+	//	req.Params()
+
+	client := NewClient("xxx", "yyy")
+	client.Debug = true
+	//resp, err := client.Do(req)
+	//if err != nil {
+	//	panic(err)
 	//}
-	//fmt.Println(client.GenerateUrl(params))
+	//fmt.Println(string(resp))
+	//
+	params := url.Values{}
+	params.Add("actId", "33")
+	params.Add("sid", "test")
+	params.Add("linkType", "1")
+	params.Add("shortLink", "1")
+
+	fmt.Println(client.GenerateUrl(params))
 
 	//params := map[string]string{
 	//	"actId":     "33",
