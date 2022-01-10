@@ -35,7 +35,7 @@ func NewClient(key string, secret string) *Client {
 func (c *Client) sign(params url.Values) string {
 	params.Del("sign")
 
-	qs := params.Encode()
+	qs := params.Encode() // url.Values的Encode方法会对key进行排序
 	qs = strings.ReplaceAll(qs, "&", "")
 	qs = strings.ReplaceAll(qs, "=", "")
 
@@ -46,7 +46,7 @@ func (c *Client) sign(params url.Values) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func (c *Client) Do(request *request.OrderListRequest) (content []byte, err error) {
+func (c *Client) Do(request request.Requester) (content []byte, err error) {
 	return c.request(request.GetApiPath(), request.Params())
 }
 
@@ -187,28 +187,27 @@ func (c *Client) Order(params url.Values) (ret *OrderResp, err error) {
 }
 
 func main() {
-	//	req := request.NewOrderListRequest()
-	//	req.SetActId(33)
-	//	req.SetBusinessLine(2)
-	//	req.SetStartTime(1634659200)
-	//	req.SetEndTime(1634745600)
-	//	req.Params()
-
-	client := NewClient("xxx", "yyy")
+	client := NewClient(Key, Secret)
 	client.Debug = true
+	//req := request.NewOrderListRequest()
+	//req.SetActId(33)
+	//req.SetBusinessLine(2)
+	//req.SetStartTime(1634659200)
+	//req.SetEndTime(1634745600)
+	//req.Params()
+
 	//resp, err := client.Do(req)
 	//if err != nil {
 	//	panic(err)
 	//}
 	//fmt.Println(string(resp))
-	//
-	params := url.Values{}
-	params.Add("actId", "33")
-	params.Add("sid", "test")
-	params.Add("linkType", "1")
-	params.Add("shortLink", "1")
 
-	fmt.Println(client.GenerateUrl(params))
+	//params := url.Values{}
+	//params.Add("actId", "33")
+	//params.Add("sid", "test")
+	//params.Add("linkType", "1")
+	//params.Add("shortLink", "1")
+	//fmt.Println(client.GenerateUrl(params))
 
 	//params := map[string]string{
 	//	"actId":     "33",
@@ -220,12 +219,32 @@ func main() {
 	//	"queryTimeType": "1",
 	//}
 	//fmt.Println(client.OrderList(params))
-
+	//
 	//params := map[string]string{
 	//	"actId":        "33",
-	//	"businessLine": "2", // actId和businessLine至少有一个
+	//	"businessLine": "2",
 	//	"orderId":      "3233710410647623",
 	//	"full":         "1",
 	//}
 	//fmt.Println(client.Order(params))
+
+	//req := request.NewOrderRequest()
+	//req.SetActId(33)
+	//req.SetBusinessLine(2)
+	//req.SetFull(true)
+	//req.SetOrderId("3233710410647623")
+
+	//req.SetParams(params)
+	//resp, err := client.Do(req)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println(string(resp))
+
+	//req := request.NewGenerateLinkRequest()
+	//req.SetActId(33)
+	//req.SetSid("xxx")
+	//req.SetLinkType(1)
+	//req.SetShortLink(true)
+	//client.Do(req)
 }
