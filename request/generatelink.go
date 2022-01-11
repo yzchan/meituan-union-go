@@ -27,30 +27,30 @@ func NewGenerateLinkRequest() *GenerateLinkRequest {
 	}
 }
 
-func (r GenerateLinkRequest) GetApiPath() string {
+func (r *GenerateLinkRequest) GetApiPath() string {
 	return "/api/generateLink"
 }
 
-func (r GenerateLinkRequest) Params() url.Values {
+func (r *GenerateLinkRequest) Params() url.Values {
 	return r.params
 }
 
-func (r GenerateLinkRequest) SetSid(v string) GenerateLinkRequest {
+func (r *GenerateLinkRequest) SetSid(v string) *GenerateLinkRequest {
 	r.params.Set("sid", v)
 	return r
 }
 
-func (r GenerateLinkRequest) SetActId(v int) GenerateLinkRequest {
+func (r *GenerateLinkRequest) SetActId(v int) *GenerateLinkRequest {
 	r.params.Set("actId", strconv.Itoa(v))
 	return r
 }
 
-func (r GenerateLinkRequest) SetLinkType(v int) GenerateLinkRequest {
+func (r *GenerateLinkRequest) SetLinkType(v int) *GenerateLinkRequest {
 	r.params.Set("linkType", strconv.Itoa(v))
 	return r
 }
 
-func (r GenerateLinkRequest) SetShortLink(v bool) GenerateLinkRequest {
+func (r *GenerateLinkRequest) SetShortLink(v bool) *GenerateLinkRequest {
 	if v {
 		r.params.Set("shortLink", "1")
 	} else {

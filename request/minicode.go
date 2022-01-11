@@ -19,20 +19,20 @@ func NewMiniCodeRequest() *MiniCodeRequest {
 	}
 }
 
-func (r MiniCodeRequest) GetApiPath() string {
+func (r *MiniCodeRequest) GetApiPath() string {
 	return "/api/miniCode"
 }
 
-func (r MiniCodeRequest) Params() url.Values {
+func (r *MiniCodeRequest) Params() url.Values {
 	return r.params
 }
 
-func (r MiniCodeRequest) SetSid(v string) MiniCodeRequest {
+func (r *MiniCodeRequest) SetSid(v string) *MiniCodeRequest {
 	r.params.Set("sid", v)
 	return r
 }
 
-func (r MiniCodeRequest) SetActId(v int) MiniCodeRequest {
+func (r *MiniCodeRequest) SetActId(v int) *MiniCodeRequest {
 	r.params.Set("actId", strconv.Itoa(v))
 	return r
 }

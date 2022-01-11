@@ -25,41 +25,41 @@ func NewSkuQueryRequest() *SkuQueryRequest {
 	}
 }
 
-func (r SkuQueryRequest) GetApiPath() string {
+func (r *SkuQueryRequest) GetApiPath() string {
 	return "/sku/query"
 }
 
-func (r SkuQueryRequest) Params() url.Values {
+func (r *SkuQueryRequest) Params() url.Values {
 	return r.params
 }
 
-func (r SkuQueryRequest) SetSid(v string) SkuQueryRequest {
+func (r *SkuQueryRequest) SetSid(v string) *SkuQueryRequest {
 	r.params.Set("sid", v)
 	return r
 }
 
-func (r SkuQueryRequest) SetBusinessType(v int) SkuQueryRequest {
+func (r *SkuQueryRequest) SetBusinessType(v int) *SkuQueryRequest {
 	r.params.Set("businessType", strconv.Itoa(v))
 	return r
 }
 
-func (r SkuQueryRequest) SetPageSize(v int) SkuQueryRequest {
+func (r *SkuQueryRequest) SetPageSize(v int) *SkuQueryRequest {
 	r.params.Set("pageSize", strconv.Itoa(v))
 	return r
 }
 
-func (r SkuQueryRequest) SetPageNo(v int) SkuQueryRequest {
+func (r *SkuQueryRequest) SetPageNo(v int) *SkuQueryRequest {
 	r.params.Set("pageNO", strconv.Itoa(v))
 	return r
 }
 
-func (r SkuQueryRequest) SetGeo(long, lat string) SkuQueryRequest {
+func (r *SkuQueryRequest) SetGeo(long, lat string) *SkuQueryRequest {
 	r.params.Set("longitude", long)
 	r.params.Set("latitude", lat)
 	return r
 }
 
-func (r SkuQueryRequest) SetDevice(deviceType, deviceId string) SkuQueryRequest {
+func (r *SkuQueryRequest) SetDevice(deviceType, deviceId string) *SkuQueryRequest {
 	r.params.Set("deviceType", deviceType)
 	r.params.Set("deviceId", deviceId)
 	return r

@@ -24,43 +24,43 @@ func NewOrderListRequest() *OrderListRequest {
 	}
 }
 
-func (r OrderListRequest) GetApiPath() string {
+func (r *OrderListRequest) GetApiPath() string {
 	return "/api/orderList"
 }
 
-func (r OrderListRequest) SetBusinessLine(v int) OrderListRequest {
+func (r *OrderListRequest) Params() url.Values {
+	return r.params
+}
+
+func (r *OrderListRequest) SetBusinessLine(v int) *OrderListRequest {
 	r.params.Set("businessLine", strconv.Itoa(v))
 	return r
 }
 
-func (r OrderListRequest) SetActId(v int) OrderListRequest {
+func (r *OrderListRequest) SetActId(v int) *OrderListRequest {
 	r.params.Set("actId", strconv.Itoa(v))
 	return r
 }
 
-func (r OrderListRequest) SetStartTime(v int) OrderListRequest {
+func (r *OrderListRequest) SetStartTime(v int) *OrderListRequest {
 	r.params.Set("startTime", strconv.Itoa(v))
 	return r
 }
 
-func (r OrderListRequest) SetEndTime(v int) OrderListRequest {
+func (r *OrderListRequest) SetEndTime(v int) *OrderListRequest {
 	r.params.Set("endTime", strconv.Itoa(v))
 	return r
 }
 
-func (r OrderListRequest) SetPage(v int) OrderListRequest {
+func (r *OrderListRequest) SetPage(v int) *OrderListRequest {
 	r.params.Set("page", strconv.Itoa(v))
 	return r
 }
-func (r OrderListRequest) SetLimit(v int) OrderListRequest {
+func (r *OrderListRequest) SetLimit(v int) *OrderListRequest {
 	r.params.Set("limit", strconv.Itoa(v))
 	return r
 }
-func (r OrderListRequest) SetQueryTimeType(v int) OrderListRequest {
+func (r *OrderListRequest) SetQueryTimeType(v int) *OrderListRequest {
 	r.params.Set("queryTimeType", strconv.Itoa(v))
 	return r
-}
-
-func (r OrderListRequest) Params() url.Values {
-	return r.params
 }
